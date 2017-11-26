@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+  
+body {
+    background-color: #B5E3DA;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15pt;
+    color: #506460;
+    text-align: center;
+}
+
+h1 {
+  font-size: 20pt;
+  font-weight: bold;
+  text-align: left;
+}
+
+.homelogo {
+  font-size: 50pt;
+  text-align: center;
+}
+
+h2 {
+  font-size: 30pt;
+}
+form {
+  font-weight: bold;
+}
