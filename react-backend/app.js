@@ -18,21 +18,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieSession({
-  secret: 'SHHisASecret'
+  secret: 'SHHisASecret',
+  maxAge: 24 * 60 * 60 * 1000
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function (req, res) {
   if (req.session.username && req.session.username !== '') {
-    res.redirect('/books');
+    res.redirect('/login');
   } else {
     res.redirect('/login');
   }
 });
 
 app.get('/login', function(req, res) {
+  console.log(req.session);
   if (req.session.username && req.session.username !== '') {
+    console.log('logged in');
     res.json({register: false, logged: 'in'});
   } else {
     res.json({register: false, logged: 'out'});
@@ -40,6 +43,7 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
+  //console.log(req.session.username);
   username = req.body.username;
   password = req.body.password;
   User.checkIfLegit(username, password, function(err, isRight) {
@@ -50,7 +54,9 @@ app.post('/login', function(req, res) {
       if (isRight) {
         req.session.username = username;
         console.log('login');
-        res.redirect('/books');
+        console.log(req.session);
+        req.session.save();
+        //res.redirect('/books');
       } else {
         res.redirect('/login');
       }
@@ -66,10 +72,23 @@ app.post('/register', function(req, res) {
 });
 
 app.get('/books', function(req, res) {
-
+  console.log('go to books');
+  if (req.session.username && req.session.username !== '') {
+    console.log('access granted');
+    res.json({authenticated: true, books: User.getPosts()});
+  } else {
+    console.log('must log in');
+    res.json({authenticated: false, books: []});
+  }
 });
 
-//app.use('/login', login);
+app.post('/books', function(req, res) {
+  User.addPost(req.session.username, req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
+    if (err) {
+      res.send(err);
+    }
+  })
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
