@@ -11,6 +11,8 @@ var postSchema = new Schema({
   details: {type: String}
 });
 
+var PostSchema = mongoose.model('PostSchema', postSchema);
+
 var userSchema = new Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -65,9 +67,10 @@ userSchema.statics.checkIfLegit = function(username, password, callback) {
 }
 
 userSchema.statics.addPost = function(username, title, price, className, email, details, callback) {
-  var newPostSchema = new postSchema({title: title, price: price, class: className, email: email, details: details});
+  var newPostSchema = new PostSchema({title: title, price: price, class: className, email: email, details: details});
   this.findOne({username: username}, function(err, user) {
     if (err) {
+      console.log('user error');
       callback(err);
     }
     if (!user) {
@@ -77,12 +80,22 @@ userSchema.statics.addPost = function(username, title, price, className, email, 
     else {
       user.posts.push(newPostSchema);
     }
+    user.save(callback);
   });
-  newPostSchema.save(callback);
 }
 
-userSchema.statics.getPosts = function () {
-  return this.find({}, 'posts');
+userSchema.statics.getPosts = function (callback) {
+  this.find({}, 'posts', function(err, docs) {
+    var output = [];
+    for (var i = 0; i < docs.length; i++) {
+      if (docs[i].posts.length > 0) {
+        for (var j = 0; j < docs[i].posts.length; j++) {
+          output.push(docs[i].posts[j].title);
+        }
+      }
+    }
+    callback(output);
+  });
 }
 
 module.exports = mongoose.model('User', userSchema);

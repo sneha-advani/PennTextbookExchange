@@ -22,6 +22,12 @@ class ViewBooks extends Component {
   constructor() {
     super();
     this.state = {authenticated: false, books: []};
+    this.linkClick = this.linkClick.bind(this);
+  }
+
+  linkClick(event) {
+    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
+      .then (res => console.log(res));
   }
 
   componentDidMount() {
@@ -36,18 +42,28 @@ class ViewBooks extends Component {
         <h1>Penn Textbook Exchange</h1>
         <h2>Books</h2>
            <p>{this.state.authenticated ? "" : "Please log in to view books." }</p>
-           {this.state.books.map((book) => (<h3 className='book'>book</h3>))}
-           {this.state.authenticated ? <Link to="/new">Create new post</Link> : <Link to="/">Back</Link>}
+           {this.state.books.map((book, index) => <p key={index}>{book}</p>)}
+           {this.state.authenticated ? <Link to="/new" onClick={this.linkClick}>Create new post</Link> : <Link to="/">Back</Link>}
       </div>
     );
   }
 }
 
 class NewBook extends Component {
+  constructor() {
+    super();
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.linkClick = this.linkClick.bind(this);
+  }
   handleSubmit(event) {
     event.preventDefault();
-    fetch('/books', {method: 'POST', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
-      .then(res => console.log(res));    
+    fetch('/new', {method: 'POST', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
+      .then(res => console.log(res));
+  }
+
+  linkClick(event) {
+    fetch('/new')
+      .then (res => console.log(res));
   }
 
   render() {
@@ -68,7 +84,7 @@ class NewBook extends Component {
             <input type="text" name="details" /></p>
             <p><input type="submit" /></p>
           </form>
-          <Link to="/books">View Books</Link>
+          <Link to="/books" onClick={this.linkClick} >View Books</Link>
 
     </div>
     );
@@ -82,6 +98,7 @@ class Home extends Component {
     this.state = {logged: 'out', register: false}
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleRegister = this.handleRegister.bind(this);
+    this.linkClick = this.linkClick.bind(this);
   }
 
   componentDidMount() {
@@ -94,6 +111,16 @@ class Home extends Component {
       fetch('/login')
         .then(res => res.json())
         .then(resJson => this.setState({logged: resJson.logged, register: false}));
+    }
+  }
+
+  linkClick(event) {
+    if (this.state.register) {
+      fetch('/register', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
+        .then(res => console.log(res));
+    } else {
+      fetch('/login', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
+        .then(res => console.log(res));
     }
   }
 
@@ -125,7 +152,7 @@ class Home extends Component {
       <h1 className="homelogo">Penn Textbook Exchange</h1>
           <p>Welcome to Penn Textbook Exchange - a place for you to easily buy and sell used textbooks for classes at Penn. Browse our repository of textbooks for the book you need for a specific Penn class at a competitive price, and get connected with a Penn student from whom you can pick up the book on campus!</p>
 
-          <p>You are currently logged {this.state.logged}. Click <Link to="/books">here</Link> to view books.</p>
+          <p>You are currently logged {this.state.logged}. Click <Link to="/books" onClick={this.linkClick}>here</Link> to view books.</p>
           <form onSubmit={this.handleSubmit}>
           <p>Username<br />
             <input type="text" name="username"/></p>

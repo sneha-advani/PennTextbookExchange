@@ -35,7 +35,7 @@ app.get('/', function (req, res) {
 app.get('/login', function(req, res) {
   console.log(req.session);
   if (req.session.username && req.session.username !== '') {
-    console.log('logged in');
+    console.log('logged in'); 
     res.json({register: false, logged: 'in'});
   } else {
     res.json({register: false, logged: 'out'});
@@ -44,31 +44,39 @@ app.get('/login', function(req, res) {
 
 app.post('/login', function(req, res) {
   //console.log(req.session.username);
-  username = req.body.username;
-  password = req.body.password;
-  User.checkIfLegit(username, password, function(err, isRight) {
-    if (err) {
-      console.log('err');
-      res.send('Error! ' + err);
-    } else {
-      if (isRight) {
-        req.session.username = username;
-        console.log('login');
-        console.log(req.session);
-        req.session.save();
-        //res.redirect('/books');
+  if (req.body.button === 'link') {
+    res.redirect('/books');
+  } else {
+    username = req.body.username;
+    password = req.body.password;
+    User.checkIfLegit(username, password, function(err, isRight) {
+      if (err) {
+        console.log('err');
+        res.send('Error! ' + err);
       } else {
-        res.redirect('/login');
+        if (isRight) {
+          req.session.username = username;
+          console.log('login');
+          console.log(req.session);
+          req.session.save();
+          res.redirect('/login');
+        } else {
+          res.redirect('/login');
+        }
       }
-    }
-  });
+    });
+  }
 });
 
 app.post('/register', function(req, res) {
-  User.addUser(req.body.username, req.body.password, function(err) {
+  if (req.body.button === 'link') {
+    res.redirect('/books');
+  } else {
+    User.addUser(req.body.username, req.body.password, function(err) {
     if (err) res.send('error' + err);
     else res.send('new user registered with username ' + req.body.username);
   });
+  }
 });
 
 app.get('/books', function(req, res) {
@@ -78,16 +86,31 @@ app.get('/books', function(req, res) {
     res.json({authenticated: true, books: User.getPosts()});
   } else {
     console.log('must log in');
-    res.json({authenticated: false, books: []});
+    User.getPosts(function (posts) {
+      res.json({authenticated: true, books: posts});
+    });
+    //console.log(userPosts);
   }
 });
 
 app.post('/books', function(req, res) {
-  User.addPost(req.session.username, req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
+  res.redirect('/new');
+});
+
+app.get('/new', function(req, res) {
+  res.redirect('/books');
+});
+
+app.post('/new', function(req, res) {
+  if (req.body.button === 'link') {
+    res.redirect('/books');
+  } else {
+    User.addPost('sneha', req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
     if (err) {
-      res.send(err);
+      res.send('err');
     }
-  })
+    })
+  }
 });
 
 // catch 404 and forward to error handler
