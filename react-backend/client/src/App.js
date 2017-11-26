@@ -42,7 +42,7 @@ class ViewBooks extends Component {
         <h1>Penn Textbook Exchange</h1>
         <h2>Books</h2>
            <p>{this.state.authenticated ? "" : "Please log in to view books." }</p>
-           {this.state.books.map((book, index) => <p key={index}>{book}</p>)}
+           {this.state.books.map((book, index) => <p key={index}>{book.title}</p>)}
            {this.state.authenticated ? <Link to="/new" onClick={this.linkClick}>Create new post</Link> : <Link to="/">Back</Link>}
       </div>
     );

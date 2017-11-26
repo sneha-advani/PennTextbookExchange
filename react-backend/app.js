@@ -83,13 +83,12 @@ app.get('/books', function(req, res) {
   console.log('go to books');
   if (req.session.username && req.session.username !== '') {
     console.log('access granted');
-    res.json({authenticated: true, books: User.getPosts()});
-  } else {
-    console.log('must log in');
     User.getPosts(function (posts) {
       res.json({authenticated: true, books: posts});
     });
-    //console.log(userPosts);
+  } else {
+    console.log('must log in');
+    res.json({authenticated: false, books: []});
   }
 });
 
@@ -105,7 +104,7 @@ app.post('/new', function(req, res) {
   if (req.body.button === 'link') {
     res.redirect('/books');
   } else {
-    User.addPost('sneha', req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
+    User.addPost(req.session.username, req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
     if (err) {
       res.send('err');
     }

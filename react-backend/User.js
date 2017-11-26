@@ -79,8 +79,8 @@ userSchema.statics.addPost = function(username, title, price, className, email, 
     }
     else {
       user.posts.push(newPostSchema);
+      user.save(callback);
     }
-    user.save(callback);
   });
 }
 
@@ -90,7 +90,7 @@ userSchema.statics.getPosts = function (callback) {
     for (var i = 0; i < docs.length; i++) {
       if (docs[i].posts.length > 0) {
         for (var j = 0; j < docs[i].posts.length; j++) {
-          output.push(docs[i].posts[j].title);
+          output.push(docs[i].posts[j]);
         }
       }
     }
