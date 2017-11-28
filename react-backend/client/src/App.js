@@ -84,6 +84,11 @@ class ViewBooks extends Component {
       .then (res => console.log(res));
   }
 
+  logoutClick(event) {
+    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
+      .then (res => console.log(res));
+  }
+
   componentDidMount() {
     fetch('/books')
       .then(res => res.json())
@@ -97,7 +102,7 @@ class ViewBooks extends Component {
         <h2>Available Books</h2>
            <p>{this.state.authenticated ? "" : "Please log in to view books." }</p>
            {this.state.books.map((book, index) => <p key={index}><span>{book.title} ${book.price} </span><a href={ 'mailto:' + book.email}>Contact</a></p>)}
-           {this.state.authenticated ? <span><Link to="/new" onClick={this.linkClick}>Create new post</Link><span> </span><Link to="/account" onClick={this.accountClick}>View my books</Link></span> : <Link to="/">Back</Link>}
+           {this.state.authenticated ? <span><Link to="/new" onClick={this.linkClick}>Create new post</Link><span> </span><Link to="/account" onClick={this.accountClick}>View my books</Link><span> </span><Link to="/" onClick={this.logoutClick}>Log out</Link></span> : <Link to="/">Back</Link>}
       </div>
     );
   }
@@ -121,6 +126,7 @@ class NewBook extends Component {
     event.preventDefault();
     fetch('/new', {method: 'POST', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
       .then(res => console.log(res));
+    event.target.reset();
   }
 
   linkClick(event) {
@@ -197,7 +203,11 @@ class Home extends Component {
     } else {
       fetch('/login', {method: 'POST', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
         .then(res => console.log(res));
+      fetch('/login')
+        .then(res => res.json())
+        .then(resJson => this.setState({logged: resJson.logged, register: false}));
     }
+    event.target.reset();
     
   }
 

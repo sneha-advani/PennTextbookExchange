@@ -6,7 +6,7 @@ var bcrypt = require('bcrypt');
 var postSchema = new Schema({
   title: {type: String, required: true},
   price: {type: Number, required: true},
-  class: {type: Number},
+  class: {type: String},
   email: {type: String},
   details: {type: String}
 });
@@ -28,10 +28,12 @@ userSchema.pre('save', function(next) {
 
   bcrypt.genSalt(10, function(err, salt) {
     if (err) {
+      console.log('salterror');
       return next(err);
     }
     bcrypt.hash(user.password, salt, function(err, hash) {
       if (err) {
+        console.log(hasherror);
         return next(err);
       }
       user.password = hash;
@@ -67,6 +69,11 @@ userSchema.statics.checkIfLegit = function(username, password, callback) {
 }
 
 userSchema.statics.addPost = function(username, title, price, className, email, details, callback) {
+  console.log(title);
+  console.log(price);
+  console.log(className);
+  console.log(email);
+  console.log(details);
   var newPostSchema = new PostSchema({title: title, price: price, class: className, email: email, details: details});
   this.findOne({username: username}, function(err, user) {
     if (err) {
@@ -78,7 +85,9 @@ userSchema.statics.addPost = function(username, title, price, className, email, 
       callback('no user');
     }
     else {
+      console.log(newPostSchema);
       user.posts.push(newPostSchema);
+      console.log(user.posts);
       user.save(callback);
     }
   });
@@ -113,7 +122,11 @@ userSchema.statics.deletePost = function(username, postID) {
       console.log('no user');
     }
     user.posts.id(postID).remove();
-    user.save();
+    user.save(function (err) {
+      if (err) {
+        console.log('save error');
+      }
+    }); 
   });
 }
 
