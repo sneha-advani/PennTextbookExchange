@@ -84,6 +84,12 @@ userSchema.statics.addPost = function(username, title, price, className, email, 
   });
 }
 
+userSchema.statics.getUserPosts = function(username, callback) {
+  this.findOne({username: username}, 'posts', function(err, user) {
+    callback(user.posts);
+  });
+}
+
 userSchema.statics.getPosts = function (callback) {
   this.find({}, 'posts', function(err, docs) {
     var output = [];
@@ -95,6 +101,19 @@ userSchema.statics.getPosts = function (callback) {
       }
     }
     callback(output);
+  });
+}
+
+userSchema.statics.deletePost = function(username, postID) {
+  this.findOne({username: username}, function (err, user) {
+    if (err) {
+      console.log('err');
+    }
+    if (!user) {
+      console.log('no user');
+    }
+    user.posts.id(postID).remove();
+    user.save();
   });
 }
 

@@ -8,8 +8,14 @@ var bodyParser = require('body-parser');
 var User = require('./User.js');
 
 var app = express();  
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
+
+
+app.use(cookieSession({
+  secret: 'SHHisASecret',
+  maxAge: 24 * 60 * 60 * 1000
+}));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -17,10 +23,14 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(cookieSession({
-  secret: 'SHHisASecret',
-  maxAge: 24 * 60 * 60 * 1000
-}));
+
+//use sessions for tracking logins
+// app.use(session({
+//   secret: 'work hard',
+//   resave: true,
+//   saveUninitialized: false
+// }));
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -57,7 +67,7 @@ app.post('/login', function(req, res) {
         if (isRight) {
           req.session.username = username;
           console.log('login');
-          console.log(req.session);
+          //console.log(req.session);
           req.session.save();
           res.redirect('/login');
         } else {
@@ -88,16 +98,28 @@ app.get('/books', function(req, res) {
     });
   } else {
     console.log('must log in');
-    res.json({authenticated: false, books: []});
+    // res.json({authenticated: false, books: []});
+    User.getPosts(function (posts) {
+      res.json({authenticated: true, books: posts});
+    });
   }
 });
 
 app.post('/books', function(req, res) {
-  res.redirect('/new');
+  if (req.body.button === 'link') {
+    res.redirect('/new');
+  }
+  if (req.body.button === 'account') {
+    res.redirect('/account');
+  }
 });
 
 app.get('/new', function(req, res) {
-  res.redirect('/books');
+  if (req.session.username && req.session.username !== '') {
+    res.json({authenticated: true});
+  } else {
+    res.json({authenticated: false});
+  }
 });
 
 app.post('/new', function(req, res) {
@@ -109,6 +131,30 @@ app.post('/new', function(req, res) {
       res.send('err');
     }
     })
+  }
+});
+
+app.get('/account', function (req, res) {
+  req.session.username = 'sneha';
+  if (req.session.username && req.session.username !== '') {
+    User.getUserPosts(req.session.username, function (posts) {
+      res.json({authenticated: true, username: req.session.username, books: posts});
+    })
+  } else {
+    res.json({authenticated: false, username: '', books: []});
+  }
+});
+
+app.post('/account', function (req, res) {
+  if (req.body.button === 'link') {
+    res.redirect('/books');
+  }
+  if (req.body.button === 'login') {
+    res.redirect('/login');
+  }
+  if (req.body.button === 'delete') {
+    req.session.username = 'sneha';
+    User.deletePost(req.session.username, req.body.postID);
   }
 });
 
