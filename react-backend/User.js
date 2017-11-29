@@ -28,12 +28,10 @@ userSchema.pre('save', function(next) {
 
   bcrypt.genSalt(10, function(err, salt) {
     if (err) {
-      console.log('salterror');
       return next(err);
     }
     bcrypt.hash(user.password, salt, function(err, hash) {
       if (err) {
-        console.log(hasherror);
         return next(err);
       }
       user.password = hash;
@@ -53,7 +51,6 @@ userSchema.statics.checkIfLegit = function(username, password, callback) {
       callback(err);
     }
     if (!user) {
-      console.log('no user');
       callback('no user');
     }
     else {
@@ -61,7 +58,6 @@ userSchema.statics.checkIfLegit = function(username, password, callback) {
         if (err) {
           return callback(err);
         }
-        console.log(isRight);
         callback(null, isRight);
       });
     };
@@ -69,25 +65,16 @@ userSchema.statics.checkIfLegit = function(username, password, callback) {
 }
 
 userSchema.statics.addPost = function(username, title, price, className, email, details, callback) {
-  console.log(title);
-  console.log(price);
-  console.log(className);
-  console.log(email);
-  console.log(details);
   var newPostSchema = new PostSchema({title: title, price: price, class: className, email: email, details: details});
   this.findOne({username: username}, function(err, user) {
     if (err) {
-      console.log('user error');
       callback(err);
     }
     if (!user) {
-      console.log('no user');
       callback('no user');
     }
     else {
-      console.log(newPostSchema);
       user.posts.push(newPostSchema);
-      console.log(user.posts);
       user.save(callback);
     }
   });
@@ -113,20 +100,20 @@ userSchema.statics.getPosts = function (callback) {
   });
 }
 
-userSchema.statics.deletePost = function(username, postID) {
+userSchema.statics.deletePost = function(username, postID, callback) {
   this.findOne({username: username}, function (err, user) {
     if (err) {
-      console.log('err');
+      callback(err);
     }
     if (!user) {
-      console.log('no user');
+      callback('no user');
     }
     user.posts.id(postID).remove();
     user.save(function (err) {
       if (err) {
-        console.log('save error');
+       callback(err);
       }
-    }); 
+    });
   });
 }
 

@@ -22,19 +22,9 @@ app.use(session({
   cookie: { secure: true }
 }));
 
-//app.use(favicon(path.join(__dirname, 'public', 'book.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-
-//use sessions for tracking logins
-// app.use(session({
-//   secret: 'work hard',
-//   resave: true,
-//   saveUninitialized: false
-// }));
-
 
 app.get('/', function (req, res) {
   if (session.username && session.username !== '') {
@@ -45,9 +35,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/login', function(req, res) {
-  console.log(session);
   if (session.username && session.username !== '') {
-    console.log('logged in'); 
     res.json({register: false, logged: 'in'});
   } else {
     res.json({register: false, logged: 'out'});
@@ -55,7 +43,6 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-  //console.log(req.session.username);
   if (req.body.button === 'link') {
     res.redirect('/books');
   } else {
@@ -63,20 +50,10 @@ app.post('/login', function(req, res) {
     password = req.body.password;
     User.checkIfLegit(username, password, function(err, isRight) {
       if (err) {
-        console.log('err');
-        res.send('Error! ' + err);
+        res.send(err);
       } else {
         if (isRight) {
           session.username = username;
-          console.log('login');
-          //console.log(req.session);
-          // req.session.save(function (err) {
-          //   if (err) {
-          //     console.log('error saving');
-          //   }
-          //   console.log('saved');
-          // });
-          console.log(session);
           res.redirect('/login');
         } else {
           res.redirect('/login');
@@ -91,21 +68,18 @@ app.post('/register', function(req, res) {
     res.redirect('/books');
   } else {
     User.addUser(req.body.username, req.body.password, function(err) {
-    if (err) res.send('error' + err);
+    if (err) res.send(err);
     else res.send('new user registered with username ' + req.body.username);
   });
   }
 });
 
 app.get('/books', function(req, res) {
-  console.log('go to books');
   if (session.username && session.username !== '') {
-    console.log('access granted');
     User.getPosts(function (posts) {
       res.json({authenticated: true, books: posts});
     });
   } else {
-    console.log('must log in');
     res.json({authenticated: false, books: []});
   }
 });
@@ -137,8 +111,7 @@ app.post('/new', function(req, res) {
   } else {
     User.addPost(session.username, req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
     if (err) {
-      console.log('add post err');
-      res.send('err');
+      res.send(err);
     }
     })
   }
@@ -162,7 +135,9 @@ app.post('/account', function (req, res) {
     res.redirect('/login');
   }
   if (req.body.button === 'delete') {
-    User.deletePost(session.username, req.body.postID);
+    User.deletePost(session.username, req.body.postID, function (err) {
+      res.send(err);
+    });
   }
 });
 

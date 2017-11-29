@@ -46,10 +46,10 @@ class MyBooks extends Component {
 
   deleteClick(event) {
     fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'delete', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
-    fetch('/account')
-      .then(res => res.json())
-      .then(resJson => this.setState({authenticated: resJson.authenticated, username: resJson.username, books: resJson.books}));
+      .then (res => console.log(res))
+      .then(fetch('/account')
+        .then(res => res.json())
+        .then(resJson => this.setState({authenticated: resJson.authenticated, username: resJson.username, books: resJson.books})));
   }
 
   render() {
@@ -125,8 +125,8 @@ class NewBook extends Component {
   handleSubmit(event) {
     event.preventDefault();
     fetch('/new', {method: 'POST', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
-      .then(res => console.log(res));
-    event.target.reset();
+      .then(res => console.log(res))
+      .then(event.target.reset());
   }
 
   linkClick(event) {
@@ -202,10 +202,10 @@ class Home extends Component {
         .then(res => console.log(res));
     } else {
       fetch('/login', {method: 'POST', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
-        .then(res => console.log(res));
-      fetch('/login')
-        .then(res => res.json())
-        .then(resJson => this.setState({logged: resJson.logged, register: false}));
+        .then(res => console.log(res))
+        .then (fetch('/login')
+          .then(res => res.json())
+          .then(resJson => this.setState({logged: resJson.logged, register: false})));
     }
     event.target.reset();
     
