@@ -1,14 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Oswald');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans|Nunito+Sans:600|Oswald');
+
+
+
   
 body {
-    background-color: #B5E3DA;
-    font-family: 'Roboto', sans-serif;
+    background-color: #F0F7F4;
+    font-family: 'Open Sans', sans-serif;
     font-size: 15pt;
-    color: #506460;
+    color: #32292F;
     text-align: center;
 }
 
 h1 {
+  font-family: 'Open Sans', sans-serif;
   font-size: 22pt;
   font-weight: bold;
   text-align: left;
@@ -18,10 +26,13 @@ h1 {
 .homelogo {
   font-size: 50pt;
   text-align: center;
+  color: #70ABAF;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 900;
 }
 
 h2 {
-  font-size: 30pt;
+  font-size: 35pt;
   margin:5px;
 }
 form {
@@ -53,25 +64,25 @@ form {
   height: auto;
   margin: 10px auto;
   justify-content: center;
-  border: 2px solid grey;
+  border: 2px solid #32292F;
   border-radius: 20px;
-  background: rgba(250, 250, 250, 0.2);
+  background: rgba(160, 225, 218, 1);
   transition: 0.2s;
 }
 
 .Book:hover {
-  /*background-color: grey;*/
-  /*font-size: 18pt;*/
-  background: rgba(250, 250, 250, 0.5);
-  border: 3px solid grey;
+  background: rgba(160, 225, 218, 0.7);
+  border: 3px solid #32292F;
 }
 
 button {
-    background-color: grey;
+    background-color: #32292F;
+    width: 200px;
     border: none;
     color: white;
     padding: 10px 10px;
-    margin: 5px;
+    margin: 10px auto;
+    margin-bottom: 25px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -84,7 +95,7 @@ button:hover {
 }
 
 input[type=submit] {
-  background-color: grey;
+  background-color: #32292F;
   border: none;
   color: white;
   padding: 10px 10px;
@@ -99,25 +110,15 @@ input[type=submit] {
 input[type=submit]:hover {
   opacity: 0.8;
 }
-/*
-form {
-  width: 600px;
-  height: auto;
-  margin: 20px auto;
-  justify-content: center;
-  border: 2px solid grey;
-  border-radius: 5px;
-  background: rgba(250, 250, 250, 0.2);
-}*/
 
 .formStyle {
   width: 600px;
   height: auto;
   margin: 20px auto;
   justify-content: center;
-  border: 2px solid grey;
-  border-radius: 5px;
-  background: rgba(250, 250, 250, 0.2);
+  border: 2px solid #32292F;
+  border-radius: 10px;
+  background: rgba(160, 225, 218, 1);
 }
 
 .text {
@@ -134,10 +135,11 @@ form {
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 60px;
-    background: grey;
+    height: 80px;
+    background: #70ABAF;
     color: white;
     text-align: center;
+    padding-top: 20px;
 }
 
 .header {
@@ -145,7 +147,8 @@ form {
     left: 0;
     top: 0;
     width: 100%;
-    background: grey;
+    height: 80px;
+    background: #32292F;
     color: white;
     text-align: center;
     /*opacity: 0.8;*/
@@ -153,4 +156,14 @@ form {
 
 .headerText {
   margin: 20px 100px;
+}
+
+#myInput {
+    background-position: 10px 12px; /* Position the search icon */
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+    width: 200px; /* Full-width */
+    font-size: 16px; /* Increase font-size */
+    padding: 12px 20px 12px 40px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin: auto;
 }

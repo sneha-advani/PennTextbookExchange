@@ -26,6 +26,9 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+var currSearchTerm = '';
+var currSearchType = 'title';
+
 app.get('/', function (req, res) {
   if (session.username && session.username !== '') {
     res.redirect('/login');
@@ -75,10 +78,25 @@ app.post('/register', function(req, res) {
 });
 
 app.get('/books', function(req, res) {
+  console.log(currSearchTerm);
   if (session.username && session.username !== '') {
-    User.getPosts(function (posts) {
-      res.json({authenticated: true, books: posts});
-    });
+    if (currSearchTerm !== '') {
+      if (currSearchType === 'title') {
+        User.searchPosts(currSearchTerm, function (posts) {
+          res.json({authenticated: true, books: posts});
+        });
+      } else {
+        User.searchPostsByClass(currSearchTerm, function (posts) {
+          res.json({authenticated: true, books: posts});
+        });
+      }
+      
+    } else {
+      console.log('normal');
+      User.getPosts(function (posts) {
+        res.json({authenticated: true, books: posts});
+      });
+    }
   } else {
     res.json({authenticated: false, books: []});
   }
@@ -94,6 +112,11 @@ app.post('/books', function(req, res) {
   if (req.body.button === 'logout') {
     session.username = '';
     res.redirect('/');
+  }
+  if (req.body.button === 'search') {
+    currSearchTerm = req.body.searchTerm;
+    currSearchType = req.body.searchType;
+    res.redirect('/books');
   }
 });
 

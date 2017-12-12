@@ -24,9 +24,9 @@ class Book extends Component {
     return(
       <div className="Book">
       <h3>{this.props.title}</h3>
-      <p>   Class: {this.props.class}</p>
-      <p>   Price: ${this.props.price}</p>
-      <p>   Other details: {this.props.details}</p>
+      <p>   <strong>Class:</strong> {this.props.class}</p>
+      <p>   <strong>Price:</strong> ${this.props.price}</p>
+      <p>   <strong>Other details:</strong> {this.props.details}</p>
       {this.props.type ? <button onClick={this.props.deleteClick} number={this.props.number}>Delete</button> : <span><button onClick={this.props.contactClick} number={this.props.number}>Contact</button>  <button number={this.props.number}>Interested</button></span>}
     </div>
     );
@@ -76,7 +76,7 @@ class MyBooks extends Component {
         <p></p>
         <h2>My Books</h2>
            {this.state.authenticated ? "" : <span><p>Please log in to view your account.</p><Link to="/" onClick={this.loginClick}>Login</Link><br /></span> }
-           {this.state.books.map((book, index) => <Book deleteClick={this.deleteClick} title={book.title} price={book.price} class={book.class} email={book.email} details = {book.details} number={index} type={true} />)}
+           {this.state.books.map((book, index) => <Book key={index} deleteClick={this.deleteClick} title={book.title} price={book.price} class={book.class} email={book.email} details = {book.details} number={index} type={true} />)}
            <Link to="/books" onClick={this.linkClick}>Back to all books</Link>
       <div className="footer">
         <p>Created by Sneha Advani</p>
@@ -90,10 +90,12 @@ class MyBooks extends Component {
 class ViewBooks extends Component {
   constructor() {
     super();
-    this.state = {authenticated: false, books: []};
+    this.state = {authenticated: false, books: [], searchType: 'title'};
     this.linkClick = this.linkClick.bind(this);
     this.accountClick = this.accountClick.bind(this);
     this.contactClick = this.contactClick.bind(this);
+    this.search = this.search.bind(this);
+    this.searchButton = this.searchButton.bind(this);
   }
 
   linkClick(event) {
@@ -115,6 +117,22 @@ class ViewBooks extends Component {
     window.location.href = "mailto:" + this.state.books[event.target.getAttribute('number')].email;
   }
 
+  search(event) {
+    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'search', 'searchTerm': event.target.value, 'searchType': this.state.searchType}), headers: {"Content-Type": "application/json"}})
+      .then (res => console.log(res))
+      .then(fetch('/books')
+        .then(res => res.json())
+        .then(resJson => this.setState({authenticated: resJson.authenticated, books: resJson.books})));
+  }
+
+  searchButton(event) {
+    if (this.state.searchType === 'title') {
+      this.setState({searchType: 'class'});
+    } else {
+      this.setState({searchType: 'title'});
+    }
+  }
+
   componentDidMount() {
     fetch('/books')
       .then(res => res.json())
@@ -130,8 +148,8 @@ class ViewBooks extends Component {
         <p></p>
         <p></p>
         <h2>Available Books</h2>
-           <p>{this.state.authenticated ? "" : "Please log in to view books." }</p>
-           {this.state.books.map((book, index) => <Book contactClick={this.contactClick} number={index} type={false} title={book.title} price={book.price} email={book.email} details={book.details} />)}
+           {this.state.authenticated ? <span>Search by {this.state.searchType}: <input type="text" id="myInput" onKeyUp={this.search} placeholder="Search for books.." />     <button onClick={this.searchButton}>Search by {this.state.searchType === 'title' ? 'class' : 'title'}</button></span> : <p>Please log in to view books.</p> }
+           {this.state.books.map((book, index) => <Book key={index} contactClick={this.contactClick} class={book.class} number={index} type={false} title={book.title} price={book.price} email={book.email} details={book.details} />)}
            {this.state.authenticated ? <span><Link to="/new" onClick={this.linkClick}>Create new post</Link><span> </span><Link to="/account" onClick={this.accountClick}>View my books</Link><span> </span><Link to="/" onClick={this.logoutClick}>Log out</Link></span> : <Link to="/">Back</Link>}
            <p></p>
            <div className="footer">
@@ -279,6 +297,9 @@ class Home extends Component {
           </form>
           </span>
           <button type="button" onClick={this.handleRegister}>{this.state.register ? 'Log In' : 'Create Account'}</button>
+          <div className="footer">
+              <p>Created by Sneha Advani</p>
+           </div>
       </div>
     );
   }

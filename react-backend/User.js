@@ -86,6 +86,38 @@ userSchema.statics.getUserPosts = function(username, callback) {
   });
 }
 
+userSchema.statics.searchPosts = function (searchTerm, callback) {
+  this.find({}, 'posts', function(err, docs) {
+    var output = [];
+    for (var i = 0; i < docs.length; i++) {
+      if (docs[i].posts.length > 0) {
+        for (var j = 0; j < docs[i].posts.length; j++) {
+          if (docs[i].posts[j].title.includes(searchTerm)) {
+            output.push(docs[i].posts[j]);
+          }
+        }
+      }
+    }
+    callback(output);
+  });
+}
+
+userSchema.statics.searchPostsByClass = function (searchTerm, callback) {
+  this.find({}, 'posts', function(err, docs) {
+    var output = [];
+    for (var i = 0; i < docs.length; i++) {
+      if (docs[i].posts.length > 0) {
+        for (var j = 0; j < docs[i].posts.length; j++) {
+          if (docs[i].posts[j].class.includes(searchTerm)) {
+            output.push(docs[i].posts[j]);
+          }
+        }
+      }
+    }
+    callback(output);
+  });
+}
+
 userSchema.statics.getPosts = function (callback) {
   this.find({}, 'posts', function(err, docs) {
     var output = [];
