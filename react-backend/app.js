@@ -78,7 +78,6 @@ app.post('/register', function(req, res) {
 });
 
 app.get('/books', function(req, res) {
-  console.log(currSearchTerm);
   if (session.username && session.username !== '') {
     if (currSearchTerm !== '') {
       if (currSearchType === 'title') {
@@ -92,7 +91,6 @@ app.get('/books', function(req, res) {
       }
       
     } else {
-      console.log('normal');
       User.getPosts(function (posts) {
         res.json({authenticated: true, books: posts});
       });
@@ -116,6 +114,11 @@ app.post('/books', function(req, res) {
   if (req.body.button === 'search') {
     currSearchTerm = req.body.searchTerm;
     currSearchType = req.body.searchType;
+    res.redirect('/books');
+  }
+  if (req.body.button === 'interested') {
+    User.addLike(req.body.postID, function (err) {
+    });
     res.redirect('/books');
   }
 });

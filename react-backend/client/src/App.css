@@ -151,7 +151,7 @@ input[type=submit]:hover {
     background: #32292F;
     color: white;
     text-align: center;
-    /*opacity: 0.8;*/
+    opacity: 0.95;
 }
 
 .headerText {

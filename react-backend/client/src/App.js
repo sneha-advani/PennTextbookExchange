@@ -27,7 +27,7 @@ class Book extends Component {
       <p>   <strong>Class:</strong> {this.props.class}</p>
       <p>   <strong>Price:</strong> ${this.props.price}</p>
       <p>   <strong>Other details:</strong> {this.props.details}</p>
-      {this.props.type ? <button onClick={this.props.deleteClick} number={this.props.number}>Delete</button> : <span><button onClick={this.props.contactClick} number={this.props.number}>Contact</button>  <button number={this.props.number}>Interested</button></span>}
+      {this.props.type ? <span><p>   <strong>Interested: </strong>{this.props.likes}</p><button onClick={this.props.deleteClick} number={this.props.number}>Delete</button></span> : <span><button onClick={this.props.contactClick} number={this.props.number}>Contact</button>  <button onClick={this.props.interestedClick} number={this.props.number}>Interested ({this.props.likes})</button></span>}
     </div>
     );
   }
@@ -40,6 +40,7 @@ class MyBooks extends Component {
     this.linkClick = this.linkClick.bind(this);
     this.loginClick = this.loginClick.bind(this);
     this.deleteClick = this.deleteClick.bind(this);
+    this.logoutClick = this.logoutClick.bind(this);
   }
 
   componentDidMount() {
@@ -50,17 +51,18 @@ class MyBooks extends Component {
 
   loginClick(event) {
     fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'login'}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
   }
 
   linkClick(event) {
     fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
+  }
+
+  logoutClick(event) {
+    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
   }
 
   deleteClick(event) {
     fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'delete', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res))
       .then(fetch('/account')
         .then(res => res.json())
         .then(resJson => this.setState({authenticated: resJson.authenticated, username: resJson.username, books: resJson.books})));
@@ -75,8 +77,8 @@ class MyBooks extends Component {
         <p></p>
         <p></p>
         <h2>My Books</h2>
-           {this.state.authenticated ? "" : <span><p>Please log in to view your account.</p><Link to="/" onClick={this.loginClick}>Login</Link><br /></span> }
-           {this.state.books.map((book, index) => <Book key={index} deleteClick={this.deleteClick} title={book.title} price={book.price} class={book.class} email={book.email} details = {book.details} number={index} type={true} />)}
+           {this.state.books.map((book, index) => <Book key={index} deleteClick={this.deleteClick} title={book.title} price={book.price} class={book.class} email={book.email} details = {book.details} number={index} type={true} likes={book.likes} />)}
+           {this.state.authenticated ? <Link to="/" onClick={this.logoutClick}>Log out</Link> : <span><p>Please log in to view your account.</p><Link to="/" onClick={this.loginClick}>Login</Link><br /></span> }
            <Link to="/books" onClick={this.linkClick}>Back to all books</Link>
       <div className="footer">
         <p>Created by Sneha Advani</p>
@@ -96,30 +98,34 @@ class ViewBooks extends Component {
     this.contactClick = this.contactClick.bind(this);
     this.search = this.search.bind(this);
     this.searchButton = this.searchButton.bind(this);
+    this.interestedClick = this.interestedClick.bind(this);
   }
 
   linkClick(event) {
     fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
   }
 
   accountClick(event) {
     fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'account'}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
   }
 
   logoutClick(event) {
     fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
   }
 
   contactClick(event) {
     window.location.href = "mailto:" + this.state.books[event.target.getAttribute('number')].email;
   }
 
+  interestedClick(event) {
+    fetch('/books', {method: 'POST', body: JSON.stringify({'button': 'interested', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
+      .then(fetch('/books')
+        .then(res => res.json())
+        .then(resJson => this.setState({authenticated: resJson.authenticated, books: resJson.books})));
+  }
+
   search(event) {
     fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'search', 'searchTerm': event.target.value, 'searchType': this.state.searchType}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res))
       .then(fetch('/books')
         .then(res => res.json())
         .then(resJson => this.setState({authenticated: resJson.authenticated, books: resJson.books})));
@@ -149,7 +155,7 @@ class ViewBooks extends Component {
         <p></p>
         <h2>Available Books</h2>
            {this.state.authenticated ? <span>Search by {this.state.searchType}: <input type="text" id="myInput" onKeyUp={this.search} placeholder="Search for books.." />     <button onClick={this.searchButton}>Search by {this.state.searchType === 'title' ? 'class' : 'title'}</button></span> : <p>Please log in to view books.</p> }
-           {this.state.books.map((book, index) => <Book key={index} contactClick={this.contactClick} class={book.class} number={index} type={false} title={book.title} price={book.price} email={book.email} details={book.details} />)}
+           {this.state.books.map((book, index) => <Book key={index} interestedClick={this.interestedClick} contactClick={this.contactClick} likes={book.likes} class={book.class} number={index} type={false} title={book.title} price={book.price} email={book.email} details={book.details} />)}
            {this.state.authenticated ? <span><Link to="/new" onClick={this.linkClick}>Create new post</Link><span> </span><Link to="/account" onClick={this.accountClick}>View my books</Link><span> </span><Link to="/" onClick={this.logoutClick}>Log out</Link></span> : <Link to="/">Back</Link>}
            <p></p>
            <div className="footer">
@@ -177,13 +183,11 @@ class NewBook extends Component {
   handleSubmit(event) {
     event.preventDefault();
     fetch('/new', {method: 'POST', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
-      .then(res => console.log(res))
       .then(event.target.reset());
   }
 
   linkClick(event) {
     fetch('/new', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
-      .then (res => console.log(res));
   }
 
   render() {
@@ -210,10 +214,10 @@ class NewBook extends Component {
             <p><input type="submit" /></p>
           </form>
         }
-          <Link to="/books" onClick={this.linkClick} >View Books</Link>
+          <Link to="/books" onClick={this.linkClick} >View all books</Link>
           <div className="footer">
               <p>Created by Sneha Advani</p>
-           </div>
+          </div>
 
     </div>
     );
@@ -246,10 +250,8 @@ class Home extends Component {
   linkClick(event) {
     if (this.state.register) {
       fetch('/register', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
-        .then(res => console.log(res));
     } else {
       fetch('/login', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
-        .then(res => console.log(res));
     }
   }
 
@@ -257,16 +259,13 @@ class Home extends Component {
     event.preventDefault();
     if (this.state.register) {
       fetch('/register', {method: 'POST', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
-        .then(res => console.log(res));
     } else {
       fetch('/login', {method: 'POST', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
-        .then(res => console.log(res))
         .then (fetch('/login')
           .then(res => res.json())
           .then(resJson => this.setState({logged: resJson.logged, register: false})));
     }
-    event.target.reset();
-    
+    event.target.reset();    
   }
 
   handleRegister(event) {

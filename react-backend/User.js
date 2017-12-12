@@ -8,7 +8,8 @@ var postSchema = new Schema({
   price: {type: Number, required: true},
   class: {type: String},
   email: {type: String},
-  details: {type: String}
+  details: {type: String},
+  likes: {type: Number}
 });
 
 var PostSchema = mongoose.model('PostSchema', postSchema);
@@ -65,7 +66,7 @@ userSchema.statics.checkIfLegit = function(username, password, callback) {
 }
 
 userSchema.statics.addPost = function(username, title, price, className, email, details, callback) {
-  var newPostSchema = new PostSchema({title: title, price: price, class: className, email: email, details: details});
+  var newPostSchema = new PostSchema({title: title, price: price, class: className, email: email, details: details, likes: 0});
   this.findOne({username: username}, function(err, user) {
     if (err) {
       callback(err);
@@ -146,6 +147,31 @@ userSchema.statics.deletePost = function(username, postID, callback) {
        callback(err);
       }
     });
+  });
+}
+
+userSchema.statics.addLike = function(postID, callback) {
+  this.find({}, 'posts', function(err, docs) {
+    var output = [];
+    for (var i = 0; i < docs.length; i++) {
+      if (docs[i].posts.length > 0) {
+        for (var j = 0; j < docs[i].posts.length; j++) {
+          console.log(docs[i].posts[j].id);
+          // docs[i].posts.id(postID).likes = docs[i].posts.id(postID).likes + 1;
+          // console.log('newlikes: ' + docs[i].posts.id(postID).likes);
+          if (docs[i].posts[j].id == postID) {
+            console.log('found: ' + docs[i].posts[j].likes);
+            docs[i].posts[j].likes = docs[i].posts[j].likes + 1;
+            console.log('newlikes: ' + docs[i].posts[j].likes);
+          }
+        }
+      }
+      docs[i].save(function (err) {
+      if (err) {
+       callback(err);
+      }
+    });
+    }
   });
 }
 
