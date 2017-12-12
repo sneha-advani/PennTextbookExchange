@@ -19,6 +19,20 @@ class App extends Component {
   }
 }
 
+class Book extends Component {
+  render () {
+    return(
+      <div className="Book">
+      <h3>{this.props.title}</h3>
+      <p>   Class: {this.props.class}</p>
+      <p>   Price: ${this.props.price}</p>
+      <p>   Other details: {this.props.details}</p>
+      {this.props.type ? <button onClick={this.props.deleteClick} number={this.props.number}>Delete</button> : <span><button onClick={this.props.contactClick} number={this.props.number}>Contact</button>  <button number={this.props.number}>Interested</button></span>}
+    </div>
+    );
+  }
+}
+
 class MyBooks extends Component {
   constructor() {
     super();
@@ -55,11 +69,18 @@ class MyBooks extends Component {
   render() {
     return(
       <div className="MyBooks">
-        <h1>Penn Textbook Exchange</h1>
+      <div className="header">
+            <h1 className="headerText">Penn Textbook Exchange</h1>
+      </div>
+        <p></p>
+        <p></p>
         <h2>My Books</h2>
            {this.state.authenticated ? "" : <span><p>Please log in to view your account.</p><Link to="/" onClick={this.loginClick}>Login</Link><br /></span> }
-           {this.state.books.map((book, index) => <p key={index}><span>{book.title} ${book.price} </span><button number={index} onClick={this.deleteClick}>Delete</button></p>)}
+           {this.state.books.map((book, index) => <Book deleteClick={this.deleteClick} title={book.title} price={book.price} class={book.class} email={book.email} details = {book.details} number={index} type={true} />)}
            <Link to="/books" onClick={this.linkClick}>Back to all books</Link>
+      <div className="footer">
+        <p>Created by Sneha Advani</p>
+      </div>
       </div>
     );
   }
@@ -72,6 +93,7 @@ class ViewBooks extends Component {
     this.state = {authenticated: false, books: []};
     this.linkClick = this.linkClick.bind(this);
     this.accountClick = this.accountClick.bind(this);
+    this.contactClick = this.contactClick.bind(this);
   }
 
   linkClick(event) {
@@ -89,6 +111,10 @@ class ViewBooks extends Component {
       .then (res => console.log(res));
   }
 
+  contactClick(event) {
+    window.location.href = "mailto:" + this.state.books[event.target.getAttribute('number')].email;
+  }
+
   componentDidMount() {
     fetch('/books')
       .then(res => res.json())
@@ -98,11 +124,19 @@ class ViewBooks extends Component {
   render() {
     return(
       <div className="ViewBooks">
-        <h1>Penn Textbook Exchange</h1>
+        <div className="header">
+            <h1 className="headerText">Penn Textbook Exchange</h1>
+        </div>
+        <p></p>
+        <p></p>
         <h2>Available Books</h2>
            <p>{this.state.authenticated ? "" : "Please log in to view books." }</p>
-           {this.state.books.map((book, index) => <p key={index}><span>{book.title} ${book.price} </span><a href={ 'mailto:' + book.email}>Contact</a></p>)}
+           {this.state.books.map((book, index) => <Book contactClick={this.contactClick} number={index} type={false} title={book.title} price={book.price} email={book.email} details={book.details} />)}
            {this.state.authenticated ? <span><Link to="/new" onClick={this.linkClick}>Create new post</Link><span> </span><Link to="/account" onClick={this.accountClick}>View my books</Link><span> </span><Link to="/" onClick={this.logoutClick}>Log out</Link></span> : <Link to="/">Back</Link>}
+           <p></p>
+           <div className="footer">
+              <p>Created by Sneha Advani</p>
+           </div>
       </div>
     );
   }
@@ -137,10 +171,14 @@ class NewBook extends Component {
   render() {
     return(
     <div className="NewBook">
-      <h1>Penn Textbook Exchange</h1>
+      <div className="header">
+            <h1 className="headerText">Penn Textbook Exchange</h1>
+      </div>
+        <p></p>
+        <p></p>
       <h2>Create New Book</h2>
-      {!this.state.authenticated ? <p>Please log in to create a post.</p> : 
-      <form onSubmit={this.handleSubmit}>
+      {!this.state.authenticated ? <p>Please log in to create a post.</p> :
+      <form className="formStyle" onSubmit={this.handleSubmit}>
           <p>Title<br />
             <input type="text" name="title"/></p>
             <p>Class<br />
@@ -155,7 +193,9 @@ class NewBook extends Component {
           </form>
         }
           <Link to="/books" onClick={this.linkClick} >View Books</Link>
-
+          <div className="footer">
+              <p>Created by Sneha Advani</p>
+           </div>
 
     </div>
     );
@@ -225,20 +265,20 @@ class Home extends Component {
     return (
       <div className="App">
       <h1 className="homelogo">Penn Textbook Exchange</h1>
-          <p>Welcome to Penn Textbook Exchange - a place for you to easily buy and sell used textbooks for classes at Penn. Browse our repository of textbooks for the book you need for a specific Penn class at a competitive price, and get connected with a Penn student from whom you can pick up the book on campus!</p>
+          <p className="text">Welcome to Penn Textbook Exchange - a place for you to easily buy and sell used textbooks for classes at Penn. Browse our repository of textbooks for the book you need for a specific Penn class at a competitive price, and get connected with a Penn student from whom you can pick up the book on campus!</p>
 
           <p>You are currently logged {this.state.logged}. Click <Link to="/books" onClick={this.linkClick}>here</Link> to view books.</p>
+          <span className="formStyle">
           <h2>{this.state.register ? "Register" : "Login"}</h2>
-          <form onSubmit={this.handleSubmit}>
+          <form className="login" onSubmit={this.handleSubmit}>
           <p>Username<br />
             <input type="text" name="username"/></p>
             <p>Password<br />
             <input type="password" name="password" /></p>
             <p><input type="submit" /></p>
           </form>
+          </span>
           <button type="button" onClick={this.handleRegister}>{this.state.register ? 'Log In' : 'Create Account'}</button>
-
-
       </div>
     );
   }

@@ -9,9 +9,10 @@ body {
 }
 
 h1 {
-  font-size: 20pt;
+  font-size: 22pt;
   font-weight: bold;
   text-align: left;
+  margin: 25px;
 }
 
 .homelogo {
@@ -21,7 +22,135 @@ h1 {
 
 h2 {
   font-size: 30pt;
+  margin:5px;
 }
 form {
   font-weight: bold;
+}
+
+.MyBooks{
+  display: flex;
+  flex-direction: column;
+}
+
+.ViewBooks {
+  display: flex;
+  flex-direction: column;
+}
+
+.NewBook {
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+}
+
+.Book {
+  width: 600px;
+  height: auto;
+  margin: 10px auto;
+  justify-content: center;
+  border: 2px solid grey;
+  border-radius: 20px;
+  background: rgba(250, 250, 250, 0.2);
+  transition: 0.2s;
+}
+
+.Book:hover {
+  /*background-color: grey;*/
+  /*font-size: 18pt;*/
+  background: rgba(250, 250, 250, 0.5);
+  border: 3px solid grey;
+}
+
+button {
+    background-color: grey;
+    border: none;
+    color: white;
+    padding: 10px 10px;
+    margin: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+input[type=submit] {
+  background-color: grey;
+  border: none;
+  color: white;
+  padding: 10px 10px;
+  margin: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+input[type=submit]:hover {
+  opacity: 0.8;
+}
+/*
+form {
+  width: 600px;
+  height: auto;
+  margin: 20px auto;
+  justify-content: center;
+  border: 2px solid grey;
+  border-radius: 5px;
+  background: rgba(250, 250, 250, 0.2);
+}*/
+
+.formStyle {
+  width: 600px;
+  height: auto;
+  margin: 20px auto;
+  justify-content: center;
+  border: 2px solid grey;
+  border-radius: 5px;
+  background: rgba(250, 250, 250, 0.2);
+}
+
+.text {
+  width: 1000px;
+  margin: auto;
+}
+
+.login {
+  margin: 10px auto;
+}
+
+.footer {
+    position: static;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: grey;
+    color: white;
+    text-align: center;
+}
+
+.header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: grey;
+    color: white;
+    text-align: center;
+    /*opacity: 0.8;*/
+}
+
+.headerText {
+  margin: 20px 100px;
 }
