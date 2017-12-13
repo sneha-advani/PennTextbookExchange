@@ -11,6 +11,7 @@ var User = require('./User.js');
 var app = express();  
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('trust proxy', 1);
 
 
 app.use(logger('dev'));
@@ -21,14 +22,14 @@ app.use(session({
   secret: 'keyboard cat',
   resave: true,
   saveUninitialized: false,
-  cookie: { }
+  cookie: { proxy: true }
 }));
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('/', function (req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  if (req.session.username && req.session.username !== '') {
+  if (session.username && session.username !== '') {
     res.redirect('/login');
   } else {
     res.redirect('/login');
@@ -37,7 +38,7 @@ app.get('/', function (req, res) {
 
 app.get('/login', function(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  if (req.session.username && req.session.username !== '') {
+  if (session.username && session.username !== '') {
     res.json({register: false, logged: 'in'});
   } else {
     res.json({register: false, logged: 'out'});
@@ -45,26 +46,24 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   if (req.body.button === 'link') {
     res.redirect('/books');
   } else {
     username = req.body.username;
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
     password = req.body.password;
     User.checkIfLegit(username, password, function(err, isRight) {
       if (err) {
         res.send(err);
       } else {
         if (isRight) {
-          req.session.username = username;
-          req.session.save();
+          session.username = username;
           res.redirect('/login');
         } else {
           res.redirect('/login');
         }
       }
-    });
-    
+    })
   }
 });
 
@@ -82,14 +81,14 @@ app.post('/register', function(req, res) {
 
 app.get('/books', function(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  if (req.session.username && req.session.username !== '') {
-    if (req.session.currSearchTerm !== '' && req.session.currSearchTerm !== undefined) {
-      if (req.session.currSearchType === 'title' || req.session.currSearchTerm === undefined) {
-        User.searchPosts(req.session.currSearchTerm, function (posts) {
+  if (session.username && session.username !== '') {
+    if (session.currSearchTerm !== '' && session.currSearchTerm !== undefined) {
+      if (session.currSearchType === 'title' || session.currSearchTerm === undefined) {
+        User.searchPosts(session.currSearchTerm, function (posts) {
           res.json({authenticated: true, books: posts});
         });
       } else {
-        User.searchPostsByClass(req.session.currSearchTerm, function (posts) {
+        User.searchPostsByClass(session.currSearchTerm, function (posts) {
           res.json({authenticated: true, books: posts});
         });
       }
@@ -113,12 +112,12 @@ app.post('/books', function(req, res) {
     res.redirect('/account');
   }
   if (req.body.button === 'logout') {
-    req.session.username = '';
+    session.username = '';
     res.redirect('/');
   }
   if (req.body.button === 'search') {
-    req.session.currSearchTerm = req.body.searchTerm;
-    req.session.currSearchType = req.body.searchType;
+    session.currSearchTerm = req.body.searchTerm;
+    session.currSearchType = req.body.searchType;
     res.redirect('/books');
   }
   if (req.body.button === 'interested') {
@@ -130,7 +129,7 @@ app.post('/books', function(req, res) {
 
 app.get('/new', function(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  if (req.session.username && session.username !== '') {
+  if (session.username && session.username !== '') {
     res.json({authenticated: true});
   } else {
     res.json({authenticated: false});
@@ -142,7 +141,7 @@ app.post('/new', function(req, res) {
   if (req.body.button === 'link') {
     res.redirect('/books');
   } else {
-    User.addPost(req.session.username, req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
+    User.addPost(session.username, req.body.title, req.body.price, req.body.class, req.body.email, req.body.details, function (err) {
     if (err) {
       res.send(err);
     }
@@ -152,9 +151,9 @@ app.post('/new', function(req, res) {
 
 app.get('/account', function (req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  if (req.session.username && req.session.username !== '') {
-    User.getUserPosts(req.session.username, function (posts) {
-      res.json({authenticated: true, username: req.session.username, books: posts});
+  if (session.username && session.username !== '') {
+    User.getUserPosts(session.username, function (posts) {
+      res.json({authenticated: true, username: session.username, books: posts});
     })
   } else {
     res.json({authenticated: false, username: '', books: []});
@@ -170,7 +169,7 @@ app.post('/account', function (req, res) {
     res.redirect('/login');
   }
   if (req.body.button === 'delete') {
-    User.deletePost(req.session.username, req.body.postID, function (err) {
+    User.deletePost(session.username, req.body.postID, function (err) {
       res.send(err);
     });
   }
