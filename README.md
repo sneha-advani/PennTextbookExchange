@@ -9,13 +9,12 @@ Technologies used:
  - MongoDB/Mongoose
  - Node
 
-Features implemented for milestone:
+Features implemented:
  - Create account/login
  - View available textbooks and contact sellers
  - Create new textbook posts
  - View and delete your posts
- 
-Features to be implemented:
- - Search/sort functionality
- - View more details about each book
- - Place for users to indicate interest in a book
+ - Search by title or class
+ - Indicate/gauge interest in a book
+
+See website at https://penn-textbook-exchange.herokuapp.com/
