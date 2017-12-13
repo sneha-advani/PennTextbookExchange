@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/newDb');
+mongoose.connect('mongodb://heroku_259kjx3v:4fefrqnro282dc5oajstmt800t@ds137256.mlab.com:37256/heroku_259kjx3v');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 
@@ -156,13 +156,8 @@ userSchema.statics.addLike = function(postID, callback) {
     for (var i = 0; i < docs.length; i++) {
       if (docs[i].posts.length > 0) {
         for (var j = 0; j < docs[i].posts.length; j++) {
-          console.log(docs[i].posts[j].id);
-          // docs[i].posts.id(postID).likes = docs[i].posts.id(postID).likes + 1;
-          // console.log('newlikes: ' + docs[i].posts.id(postID).likes);
           if (docs[i].posts[j].id == postID) {
-            console.log('found: ' + docs[i].posts[j].likes);
             docs[i].posts[j].likes = docs[i].posts[j].likes + 1;
-            console.log('newlikes: ' + docs[i].posts[j].likes);
           }
         }
       }

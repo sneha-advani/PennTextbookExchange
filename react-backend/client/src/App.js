@@ -44,25 +44,25 @@ class MyBooks extends Component {
   }
 
   componentDidMount() {
-    fetch('/account')
+    fetch('/account', { credentials: 'include' })
       .then(res => res.json())
       .then(resJson => this.setState({authenticated: resJson.authenticated, username: resJson.username, books: resJson.books}));
   }
 
   loginClick(event) {
-    fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'login'}), headers: {"Content-Type": "application/json"}})
+    fetch('/account', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'login'}), headers: {"Content-Type": "application/json"}})
   }
 
   linkClick(event) {
-    fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
+    fetch('/account', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
   }
 
   logoutClick(event) {
-    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
+    fetch('/books', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
   }
 
   deleteClick(event) {
-    fetch('/account', {method: 'POST', body: JSON.stringify({'button' : 'delete', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
+    fetch('/account', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'delete', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
       .then(fetch('/account')
         .then(res => res.json())
         .then(resJson => this.setState({authenticated: resJson.authenticated, username: resJson.username, books: resJson.books})));
@@ -102,15 +102,15 @@ class ViewBooks extends Component {
   }
 
   linkClick(event) {
-    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
+    fetch('/books', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'link'}), headers: {"Content-Type": "application/json"}})
   }
 
   accountClick(event) {
-    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'account'}), headers: {"Content-Type": "application/json"}})
+    fetch('/books', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'account'}), headers: {"Content-Type": "application/json"}})
   }
 
   logoutClick(event) {
-    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
+    fetch('/books', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'logout'}), headers: {"Content-Type": "application/json"}})
   }
 
   contactClick(event) {
@@ -118,15 +118,15 @@ class ViewBooks extends Component {
   }
 
   interestedClick(event) {
-    fetch('/books', {method: 'POST', body: JSON.stringify({'button': 'interested', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
-      .then(fetch('/books')
+    fetch('/books', {method: 'POST', credentials: 'include', body: JSON.stringify({'button': 'interested', 'postID': this.state.books[event.target.getAttribute('number')]._id}), headers: {"Content-Type": "application/json"}})
+      .then(fetch('/books', { credentials: 'include'})
         .then(res => res.json())
         .then(resJson => this.setState({authenticated: resJson.authenticated, books: resJson.books})));
   }
 
   search(event) {
-    fetch('/books', {method: 'POST', body: JSON.stringify({'button' : 'search', 'searchTerm': event.target.value, 'searchType': this.state.searchType}), headers: {"Content-Type": "application/json"}})
-      .then(fetch('/books')
+    fetch('/books', {method: 'POST', credentials: 'include', body: JSON.stringify({'button' : 'search', 'searchTerm': event.target.value, 'searchType': this.state.searchType}), headers: {"Content-Type": "application/json"}})
+      .then(fetch('/books', { credentials: 'include'})
         .then(res => res.json())
         .then(resJson => this.setState({authenticated: resJson.authenticated, books: resJson.books})));
   }
@@ -140,7 +140,7 @@ class ViewBooks extends Component {
   }
 
   componentDidMount() {
-    fetch('/books')
+    fetch('/books', { credentials: 'include' })
       .then(res => res.json())
       .then(resJson => this.setState({authenticated: resJson.authenticated, books: resJson.books}));
   }
@@ -175,19 +175,19 @@ class NewBook extends Component {
   }
 
   componentDidMount() {
-    fetch('/new')
+    fetch('/new', { credentials: 'include' })
       .then(res => res.json())
       .then(resJson => this.setState({authenticated: resJson.authenticated}));
   }
 
   handleSubmit(event) {
     event.preventDefault();
-    fetch('/new', {method: 'POST', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
+    fetch('/new', {method: 'POST', credentials: 'include', body: JSON.stringify({'title': event.target.title.value, 'class': event.target.class.value, 'price': event.target.price.value, 'email': event.target.email.value, 'details': event.target.details.value}), headers: {"Content-Type": "application/json"}})
       .then(event.target.reset());
   }
 
   linkClick(event) {
-    fetch('/new', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
+    fetch('/new', {method: 'POST', credentials: 'include', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
   }
 
   render() {
@@ -236,12 +236,12 @@ class Home extends Component {
 
   componentDidMount() {
     if (this.state.register) {
-      fetch('/register')
+      fetch('/register', {credentials: 'include'})
         .then(res => res.json())
         .then(resJson => this.setState({logged: resJson.logged, register: true}));
     }
     else {
-      fetch('/login')
+      fetch('/login', {credentials: 'include'})
         .then(res => res.json())
         .then(resJson => this.setState({logged: resJson.logged, register: false}));
     }
@@ -249,23 +249,24 @@ class Home extends Component {
 
   linkClick(event) {
     if (this.state.register) {
-      fetch('/register', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
+      fetch('/register', {method: 'POST', credentials: 'include', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
     } else {
-      fetch('/login', {method: 'POST', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
+      fetch('/login', {method: 'POST', credentials: 'include', body: JSON.stringify({'button': 'link'}), headers: {"Content-Type": "application/json"}})
     }
   }
 
   handleSubmit(event) {
     event.preventDefault();
     if (this.state.register) {
-      fetch('/register', {method: 'POST', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
+      fetch('/register', {method: 'POST', credentials: 'include', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
     } else {
-      fetch('/login', {method: 'POST', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
-        .then (fetch('/login')
+      fetch('/login', {method: 'POST', credentials: 'include', body: JSON.stringify({'username': event.target.username.value, 'password': event.target.password.value}), headers: {"Content-Type": "application/json"}})
+        .then (fetch('/login', { credentials: 'include' })
           .then(res => res.json())
-          .then(resJson => this.setState({logged: resJson.logged, register: false})));
+          .then(resJson => this.setState({logged: resJson.logged, register: false}))
+          .then(window.location.reload()));
     }
-    event.target.reset();    
+    event.target.reset();
   }
 
   handleRegister(event) {
